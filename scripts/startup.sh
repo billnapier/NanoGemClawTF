@@ -130,4 +130,14 @@ echo "Enabling and starting nanoclaw-container.service systemd unit..."
 systemctl daemon-reload
 systemctl enable --now nanoclaw-container.service || true
 
+# 5. Configure Systemd Journald Log Retention Limits
+echo "Configuring systemd journald log retention limit SystemMaxUse=500M..."
+mkdir -p /etc/systemd/journald.conf.d
+cat <<JOURNAL > /etc/systemd/journald.conf.d/nanoclaw-journal.conf
+[Journal]
+SystemMaxUse=500M
+JOURNAL
+systemctl restart systemd-journald || true
+
 echo "=== NanoGemClaw Startup Initialization Complete ==="
+
