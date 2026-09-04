@@ -1,0 +1,154 @@
+# NanoGemClawTF Deployment Quickstart 🚀
+
+This step-by-step guide will walk you through setting up Google Cloud Platform (GCP), configuring GitHub Actions keyless authentication (Workload Identity Federation), and deploying your personal **NanoGemClaw** agent in under 10 minutes.
+
+---
+
+## 📋 Prerequisites
+
+Before starting, ensure you have:
+1. A **Google Cloud Platform (GCP)** account with billing enabled.
+2. A **Google Gemini API Key** from [Google AI Studio](https://aistudio.google.com/).
+3. A **Telegram Bot Token** from [@BotFather](https://t.me/BotFather) (or Discord/Slack bot token).
+4. Your personal **Telegram User ID** (get it via [@userinfobot](https://t.me/userinfobot)).
+5. The `gcloud` CLI installed locally (optional, for initial GCP bootstrap).
+
+---
+
+## Step 1: Bootstrap GCP Prerequisites (One-Time Setup)
+
+Set your target GCP Project ID in your terminal:
+
+```bash
+export PROJECT_ID="your-gcp-project-id"
+gcloud config set project $PROJECT_ID
+```
+
+### 1.1 Enable Required GCP Service APIs
+
+```bash
+gcloud services enable \
+  compute.googleapis.com \
+  secretmanager.googleapis.com \
+  iam.googleapis.com \
+  cloudresourcemanager.googleapis.com \
+  iamcredentials.googleapis.com \
+  sts.googleapis.com
+```
+
+### 1.2 Create Terraform Deployer Service Account
+
+```bash
+gcloud iam service-accounts create terraform-deployer \
+  --display-name="Terraform Deployer SA for GitHub Actions"
+
+# Grant Editor / Admin roles required for Compute & Secret Manager
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:terraform-deployer@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --role="roles/editor"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:terraform-deployer@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --role="roles/resourcemanager.projectIamAdmin"
+```
+
+### 1.3 Configure Workload Identity Federation (WIF)
+
+Replace `YOUR_GITHUB_ORG/YOUR_REPO` with your GitHub username and repository name:
+
+```bash
+export GITHUB_REPO="your-github-username/NanoGemClawTF"
+
+# Create Workload Identity Pool
+gcloud iam workload-identity-pools create "github-pool" \
+  --location="global" \
+  --display-name="GitHub Actions Pool"
+
+# Create OIDC Provider
+gcloud iam workload-identity-pools providers create-oidc "github-provider" \
+  --location="global" \
+  --workload-identity-pool="github-pool" \
+  --display-name="GitHub Actions Provider" \
+  --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository" \
+  --issuer-uri="https://token.actions.githubusercontent.com"
+
+# Allow GitHub Actions from your repo to impersonate the Terraform Deployer SA
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
+
+gcloud iam service-accounts add-iam-policy-binding \
+  "terraform-deployer@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --role="roles/iam.workloadIdentityUser" \
+  --member="principalSet://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/github-pool/attribute.repository/${GITHUB_REPO}"
+```
+
+Get your **WIF Provider Resource String** for GitHub Actions:
+
+```bash
+echo "projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
+```
+
+---
+
+## Step 2: Configure GitHub Repository Secrets & Variables
+
+In your forked GitHub repository, navigate to **Settings → Secrets and variables → Actions**.
+
+### Add Variables (`Repository variables` tab)
+| Variable Name | Value |
+| :--- | :--- |
+| `GCP_PROJECT_ID` | `your-gcp-project-id` |
+| `GCP_REGION` | `us-central1` (or your preferred region) |
+| `GCP_ZONE` | `us-central1-a` |
+| `GCP_WIF_PROVIDER` | Output from step 1.3 (`projects/1234.../providers/github-provider`) |
+| `GCP_SERVICE_ACCOUNT` | `terraform-deployer@your-gcp-project-id.iam.gserviceaccount.com` |
+| `ALLOWED_USER_IDS` | Your Telegram User ID (e.g. `123456789`) |
+
+### Add Secrets (`Repository secrets` tab)
+| Secret Name | Value |
+| :--- | :--- |
+| `GEMINI_API_KEY` | Your Gemini API Key from Google AI Studio |
+| `TELEGRAM_BOT_TOKEN` | Your Telegram Bot Token from `@BotFather` |
+
+---
+
+## Step 3: Deploy via GitHub Actions
+
+1. Push your changes to `main` (or create a Pull Request to run `terraform plan` via `abcxyz/guardian`).
+2. Navigate to the **Actions** tab in GitHub to watch the `Terraform Apply` workflow execute.
+3. Upon completion (~2-3 minutes), GCP Compute Engine will provision the `e2-small` VM, attach the 20GB persistent data disk, retrieve secrets, and start the NanoGemClaw service.
+
+---
+
+## Step 4: Verify Deployment & Connect to Bot
+
+1. Open **Telegram** (or your chosen messaging app) and open your bot's chat.
+2. Send the command:
+   ```text
+   /start
+   ```
+   or
+   ```text
+   /status
+   ```
+3. The bot will respond with its operational readiness status:
+   > 🚀 **NanoGemClaw is online!**  
+   > **Model**: Google Gemini  
+   > **Runtime**: Sandboxed Container Execution  
+   > **Status**: Ready for prompts and tasks.
+
+---
+
+## 🛠️ Operational Commands & Logs
+
+If you ever need to inspect VM logs or debug host startup:
+
+```bash
+# SSH into VM instance
+gcloud compute ssh nanoclaw-gemini-agent --zone=us-central1-a
+
+# Check systemd daemon status
+sudo systemctl status nanoclaw.service
+
+# View live daemon logs
+sudo journalctl -u nanoclaw.service -f
+```

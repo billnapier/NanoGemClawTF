@@ -1,53 +1,96 @@
-# New Project Template
+# NanoGemClawTF 🐾🤖
 
-This repository contains a template that can be used to seed a repository for a
-new Google open source project.
+> **Declarative GitOps & Terraform Infrastructure for Hosting NanoGemClaw (Gemini Personal Agent) on GCP**
 
-See [go/releasing](http://go/releasing) (available externally at
-https://opensource.google/documentation/reference/releasing) for more information about
-releasing a new Google open source project.
+[![Terraform](https://img.shields.io/badge/Terraform-%3E%3D%201.5.0-623CE4?logo=terraform)](https://www.terraform.io/)
+[![Google Cloud](https://img.shields.io/badge/GCP-Compute%20Engine%20%2B%20Gemini-4285F4?logo=google-cloud)](https://cloud.google.com/)
+[![Guardian](https://img.shields.io/badge/CI%2FCD-abcxyz%2Fguardian-0F9D58?logo=github-actions)](https://github.com/abcxyz/guardian)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-This template uses the Apache license, as is Google's default.  See the
-documentation for instructions on using alternate license.
+**NanoGemClawTF** is an open-source, 100% forkable Infrastructure-as-Code (IaC) repository that provisions a secure, low-overhead hosting environment for **NanoGemClaw**—an autonomous personal agent harness powered by Google Gemini—on Google Cloud Platform (GCP).
 
-## How to use this template
+---
 
-1. Clone it from GitHub.
-    * There is no reason to fork it.
-1. Create a new local repository and copy the files from this repo into it.
-1. Modify README.md and docs/contributing.md to represent your project, not the
-   template project.
-1. Develop your new project!
+## ✨ Key Product Features
 
-``` shell
-git clone https://github.com/google/new-project
-mkdir my-new-thing
-cd my-new-thing
-git init
-cp -r ../new-project/* ../new-project/.github .
-git add *
-git commit -a -m 'Boilerplate for new Google open source project'
+- 🔒 **Zero-Trust & Keyless Authentication**: Keyless CI/CD authentication via GCP Workload Identity Federation (WIF) and GitHub Actions. No long-lived service account JSON keys.
+- 🛡️ **Guardian-Driven GitOps**: Automated `terraform plan` reviews, policy enforcement, and `apply` workflows using [`abcxyz/guardian`](https://github.com/abcxyz/guardian).
+- 💾 **Decoupled Ephemeral Compute**: VM host (`e2-small`) is disposable; SQLite state and agent memories persist on an attached 20GB GCP Persistent Disk mounted at `/opt/nanoclaw/data`.
+- 🔐 **Secret Isolation**: Gemini API keys and Telegram/Discord/Slack bot tokens are securely stored in GCP Secret Manager and retrieved at host boot.
+- 🚫 **User Access Control**: Built-in user allowlist (`ALLOWED_USER_IDS`) prevents unauthorized access and protects your Gemini token budget.
+- 🌐 **100% Publicly Reusable**: Zero hardcoded Project IDs or private details. Fully parameterized via GitHub Actions repository variables and secrets.
+
+---
+
+## 🏛️ System Architecture
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                          GitHub Repository                             │
+│                     (Actions + abcxyz/guardian)                        │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ Workload Identity Federation (WIF)
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        Google Cloud Platform                           │
+│                                                                        │
+│  ┌─────────────────────────┐         ┌──────────────────────────────┐  │
+│  │   GCP Secret Manager    │         │     Compute Engine Instance  │  │
+│  │ (Gemini Key, Bot Tokens)│         │         (e2-small)           │  │
+│  └────────────┬────────────┘         │                              │  │
+│               │ Dynamic fetch        │  ┌────────────────────────┐  │  │
+│               └─────────────────────►│  │ NanoGemClaw Host Daemon│  │  │
+│                                      │  └───────────┬────────────┘  │  │
+│                                      │              │ Container     │  │
+│  ┌─────────────────────────┐         │              ▼ Sandbox       │  │
+│  │  GCP Persistent Disk    │◄────────┤  ┌────────────────────────┐  │  │
+│  │ (SQLite & Memory State) │ Mount   │  │ Ephemeral Tool Runner  │  │  │
+│  └─────────────────────────┘         │  └────────────────────────┘  │  │
+│                                      └──────────────┬───────────────┘  │
+└─────────────────────────────────────────────────────┼──────────────────┘
+                                                      │ Messaging Gateway
+                                                      ▼ (Telegram/Discord/Slack)
+                                                ┌───────────┐
+                                                │   User    │
+                                                └───────────┘
 ```
 
-## Source Code Headers
+---
 
-Every file containing source code must include copyright and license
-information. This includes any JS/CSS files that you might be serving out to
-browsers. (This is to help well-intentioned people avoid accidental copying that
-doesn't comply with the license.)
+## 🚀 Quickstart & Setup Guide
 
-Apache header:
+Want to deploy your own Gemini agent in under 10 minutes? Check out our dedicated **[Quickstart Guide](docs/quickstart.md)**.
 
-    Copyright 2024 Google LLC
+### Required GitHub Variables & Secrets
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+Configure the following in your repository under **Settings → Secrets and variables → Actions**:
 
-        https://www.apache.org/licenses/LICENSE-2.0
+#### Variables (`vars`)
+| Variable Name | Description | Example |
+| :--- | :--- | :--- |
+| `GCP_PROJECT_ID` | Your Google Cloud Project ID | `my-gemini-agent-prod` |
+| `GCP_REGION` | GCP Compute Region | `us-central1` |
+| `GCP_ZONE` | GCP Compute Zone | `us-central1-a` |
+| `GCP_WIF_PROVIDER` | Workload Identity Provider resource string | `projects/1234/locations/global/workloadIdentityPools/...` |
+| `GCP_SERVICE_ACCOUNT` | Terraform deployer service account email | `terraform-deployer@my-proj.iam.gserviceaccount.com` |
+| `ALLOWED_USER_IDS` | Comma-separated allowed messaging user IDs | `123456789` |
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+#### Secrets (`secrets`)
+| Secret Name | Description |
+| :--- | :--- |
+| `GEMINI_API_KEY` | Google Gemini API Key |
+| `TELEGRAM_BOT_TOKEN` | Bot Token from Telegram `@BotFather` (or Slack/Discord token) |
+
+---
+
+## 📚 Documentation
+
+- 📖 **[Deployment Quickstart](docs/quickstart.md)** — Step-by-step setup guide for GCP, GitHub Actions, and initial deployment.
+- 📐 **[Architecture Design Doc](docs/Overview.md)** — Detailed specification of GCP infrastructure, security boundaries, and startup scripts.
+- 📜 **[Project Constitution](.specify/memory/constitution.md)** — Governance rules, security principles, and non-negotiables.
+
+---
+
+## 📄 License
+
+Distributed under the Apache 2.0 License. See [`LICENSE`](LICENSE) for more details.
