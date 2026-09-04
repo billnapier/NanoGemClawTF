@@ -6,7 +6,7 @@ Ensure the following GitHub Repository Variables (`vars.*`) and Secrets (`secret
 
 ### Required GitHub Repository Variables (`vars.*`)
 - `GCP_WIF_PROVIDER`: Full resource name of the Workload Identity Provider (e.g., `projects/12345/locations/global/workloadIdentityPools/github-pool/providers/github-provider`).
-- `GCP_WIF_SERVICE_ACCOUNT`: Service account email used for CI/CD operations (e.g., `nanoclaw-deployer@my-project.iam.gserviceaccount.com`).
+- `GCP_SERVICE_ACCOUNT`: Service account email used for CI/CD operations (e.g., `terraform-deployer@my-project.iam.gserviceaccount.com`).
 - `GCP_PROJECT_ID`: Target GCP Project ID (e.g., `my-nanoclaw-project`).
 - `GCP_TF_STATE_BUCKET`: GCS Bucket name for Terraform backend state.
 - `GCP_REGION`: Target GCP Region (default: `us-central1`).

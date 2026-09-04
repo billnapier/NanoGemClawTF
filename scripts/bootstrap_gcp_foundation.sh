@@ -70,6 +70,16 @@ gcloud projects add-iam-policy-binding "${GCP_PROJECT_ID}" \
   --role="roles/resourcemanager.projectIamAdmin" \
   --condition=None --quiet || true
 
+gcloud projects add-iam-policy-binding "${GCP_PROJECT_ID}" \
+  --member="serviceAccount:${SA_EMAIL}" \
+  --role="roles/storage.admin" \
+  --condition=None --quiet || true
+
+gcloud storage buckets add-iam-policy-binding "gs://${BUCKET_NAME}" \
+  --member="serviceAccount:${SA_EMAIL}" \
+  --role="roles/storage.admin" \
+  --quiet || true
+
 echo "--> 4. Setting up Workload Identity Federation..."
 if gcloud iam workload-identity-pools describe "${POOL_NAME}" --location="global" &>/dev/null; then
   echo "WIF Pool ${POOL_NAME} already exists."

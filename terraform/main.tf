@@ -1,3 +1,4 @@
+# Core Terraform Configuration for NanoGemClaw Infrastructure
 terraform {
   required_version = ">= 1.5.0"
   required_providers {
@@ -7,8 +8,10 @@ terraform {
     }
   }
 
-  # Backend configuration will be passed dynamically via guardian/backend config
-  backend "gcs" {}
+  backend "gcs" {
+    bucket = "nanogemclaw-tf-90326-nanoclaw-tfstate"
+    prefix = "terraform/state"
+  }
 }
 
 provider "google" {

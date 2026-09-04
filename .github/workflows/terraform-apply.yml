@@ -26,7 +26,7 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
-          service_account: ${{ vars.GCP_WIF_SERVICE_ACCOUNT }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -34,13 +34,17 @@ jobs:
           terraform_version: '1.5.7'
 
       - name: Setup Guardian CLI
-        uses: abcxyz/pkg/actions/setup-binary@v1
+        uses: abcxyz/actions/.github/actions/setup-binary@main
         with:
-          name: 'guardian'
-          repo: 'abcxyz/guardian'
+          download_url: 'https://github.com/abcxyz/guardian/releases/download/v3.2.5/guardian_3.2.5_linux_amd64.tar.gz'
+          install_path: '${{ runner.temp }}/.guardian'
+          binary_subpath: 'guardian'
+          cache_key: '${{ runner.os }}_${{ runner.arch }}_guardian_v3.2.5'
+          add_to_path: true
 
       - name: Execute Guardian Apply
         env:
+          GUARDIAN_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_VAR_project_id: ${{ vars.GCP_PROJECT_ID }}
           TF_VAR_region: ${{ vars.GCP_REGION }}
           TF_VAR_zone: ${{ vars.GCP_ZONE }}
@@ -48,6 +52,6 @@ jobs:
           TF_VAR_gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
           TF_VAR_telegram_bot_token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         run: |
-          guardian entrypoints apply \
+          guardian apply \
             -dir=terraform \
-            -backend-config="bucket=${{ vars.GCP_TF_STATE_BUCKET }}"
+            -storage="gcs://${{ vars.GCP_TF_STATE_BUCKET }}"
