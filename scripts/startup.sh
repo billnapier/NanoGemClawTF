@@ -55,7 +55,40 @@ else
   echo "WARNING: Persistent disk $DISK_DEVICE not detected at boot."
 fi
 
-# 2. Verify Container Runtime Availability
+# 2. Fetch GCP Secret Manager Secrets & Provision Environment File
+echo "Fetching GCP Project ID from compute metadata..."
+PROJECT_ID=$(curl -s -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/project/project-id" || echo "")
+
+GEMINI_API_KEY=""
+TELEGRAM_BOT_TOKEN=""
+
+if command -v gcloud &> /dev/null && [ -n "$PROJECT_ID" ]; then
+  echo "Retrieving secrets from Secret Manager for project $PROJECT_ID..."
+  GEMINI_API_KEY=$(gcloud secrets versions access latest --secret="gemini-api-key" --project="$PROJECT_ID" 2>/dev/null || echo "")
+  TELEGRAM_BOT_TOKEN=$(gcloud secrets versions access latest --secret="telegram-bot-token" --project="$PROJECT_ID" 2>/dev/null || echo "")
+fi
+
+CONFIG_DIR="/opt/nanoclaw/config"
+ENV_FILE="$CONFIG_DIR/env.list"
+
+mkdir -p "$CONFIG_DIR"
+chmod 0755 "$CONFIG_DIR"
+
+echo "Generating environment file at $ENV_FILE..."
+cat <<ENV > "$ENV_FILE"
+GEMINI_API_KEY=$GEMINI_API_KEY
+TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN
+ALLOWED_USER_IDS=$ALLOWED_USER_IDS
+DATA_DIR=/opt/nanoclaw/data
+NODE_ENV=production
+LOG_LEVEL=info
+ENV
+
+chmod 0600 "$ENV_FILE"
+chown root:root "$ENV_FILE" 2>/dev/null || true
+echo "Environment file successfully provisioned with hardened permissions 0600."
+
+# 3. Verify Container Runtime Availability
 if ! command -v docker &> /dev/null; then
   echo "Installing Docker engine..."
   apt-get update -y
@@ -69,7 +102,7 @@ if ! command -v docker &> /dev/null; then
   apt-get install -y docker-ce docker-ce-cli containerd.io
 fi
 
-# 3. Pull & Initialize Agent Container (Fallback: alpine:latest)
+# 4. Pull & Initialize Agent Container (Fallback: alpine:latest)
 IMAGE="${container_image}"
 echo "Pulling container image: $IMAGE..."
 docker pull "$IMAGE" || echo "Warning: Failed to pull $IMAGE, using local cache if present."
