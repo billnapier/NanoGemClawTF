@@ -44,11 +44,17 @@ jobs:
           FROM node:20-slim
           WORKDIR /app
           ENV NODE_ENV=production
+          RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
           COPY --from=builder /app ./
           EXPOSE 8080 3000
           CMD ["npx", "tsx", "src/index.ts"]
           EOF
           fi
+
+      - name: Apply Hotfixes to NanoGemClaw Source
+        run: |
+          sed -i 's/const db = getDatabase();/const db = getDatabase(); storeChatMetadata(chatId, timestamp, senderName);/' nanogemclaw-src/packages/db/src/messages.ts || true
+          sed -i 's/const db = getDatabase();/const db = getDatabase(); storeChatMetadata(chatId, timestamp, senderName);/' nanogemclaw-src/src/db/messages.ts || true
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
