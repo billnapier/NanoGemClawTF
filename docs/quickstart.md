@@ -99,6 +99,10 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member="serviceAccount:terraform-deployer@${PROJECT_ID}.iam.gserviceaccount.com" \
   --role="roles/storage.admin"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:terraform-deployer@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --role="roles/secretmanager.admin"
 ```
 
 ### 1.4 Configure Workload Identity Federation (WIF)
