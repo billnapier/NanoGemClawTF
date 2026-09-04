@@ -18,7 +18,19 @@ Before starting, ensure you have:
 
 ## Step 1: Bootstrap GCP Prerequisites (One-Time Setup)
 
-### Option A: Automated Bootstrap (Recommended)
+### Option A: Antigravity Skill Automation (Experimental) 🤖
+
+If you are using the **Antigravity AI Coding Assistant**, you can run our experimental automated setup skill:
+
+```text
+/nanogemclaw.bootstrap
+```
+
+The agent will guide you through acquiring required tokens (Telegram Bot Token, User ID, Gemini API Key), execute all GCP `gcloud` setup steps, and automatically configure GitHub secrets and variables via GitHub MCP/CLI.
+
+---
+
+### Option B: Automated Shell Script Bootstrap
 
 Set your environment variables and execute the single-command bootstrap script:
 
@@ -37,7 +49,7 @@ To verify your bootstrap configuration non-destructively at any time:
 
 ---
 
-### Option B: Manual Step-by-Step Setup
+### Option C: Manual Step-by-Step Setup
 
 Set your target GCP Project ID in your terminal:
 
