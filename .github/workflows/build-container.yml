@@ -40,10 +40,12 @@ jobs:
           COPY . .
           RUN npm install
           RUN npm run build || true
+          RUN npm run build:dashboard || true
 
           FROM node:20-slim
           WORKDIR /app
           ENV NODE_ENV=production
+          ENV DASHBOARD_HOST=0.0.0.0
           RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
           COPY --from=builder /app ./
           EXPOSE 8080 3000
