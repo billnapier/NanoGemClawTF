@@ -1,0 +1,66 @@
+name: Build NanoGemClaw Container
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: 'NanoGemClaw source repository'
+        required: false
+        default: 'Rlin1027/NanoGemClaw'
+        type: string
+  pull_request:
+    paths:
+      - '.github/workflows/build-container.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Container Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout NanoGemClawTF Repository
+        uses: actions/checkout@v4
+
+      - name: Checkout NanoGemClaw Source Code
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repository || 'Rlin1027/NanoGemClaw' }}
+          path: nanogemclaw-src
+
+      - name: Ensure Dockerfile Exists
+        run: |
+          if [ ! -f nanogemclaw-src/Dockerfile ]; then
+            echo "Creating default Dockerfile for NanoGemClaw..."
+            cat << 'EOF' > nanogemclaw-src/Dockerfile
+          FROM node:20-slim AS builder
+          WORKDIR /app
+          COPY package*.json ./
+          RUN npm install --ignore-scripts
+          COPY . .
+          RUN npm run build || npx tsc || true
+
+          FROM node:20-slim
+          WORKDIR /app
+          ENV NODE_ENV=production
+          COPY --from=builder /app ./
+          EXPOSE 8080
+          CMD ["node", "dist/index.js"]
+          EOF
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Container Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./nanogemclaw-src
+          push: false
+          tags: nanogemclaw:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
