@@ -23,7 +23,7 @@ The system architecture separates declarative infrastructure orchestration, CI/C
 | Layer | Component | Description & Role |
 | :--- | :--- | :--- |
 | **GitOps / CI/CD** | GitHub Actions + `abcxyz/guardian` + WIF | Executes automated `terraform plan` reviews, policy enforcement, and `apply` workflows using keyless GCP Workload Identity Federation. |
-| **Container Registry** | GitHub Container Registry (GHCR) | Holds pre-built immutable Docker container images compiled daily via GHA workflow from `https://github.com/Rlin1027/NanoGemClaw`. |
+| **Container Registry** | GitHub Container Registry (GHCR) | Holds pre-built immutable Docker container images compiled daily via GHA workflow from `https://github.com/billnapier/NanoGemClaw`. |
 | **Infrastructure** | Google Compute Engine (GCE) | Lightweight `e2-small` Debian 12 virtual machine hosting Docker container runtime and systemd mounts. |
 | **State Storage** | GCP Persistent Disk (Zonal) | Separate 20GB Persistent Disk mounted to `/opt/nanoclaw/data` via systemd mount unit (`opt-nanoclaw-data.mount`) retaining SQLite databases and file memory across VM recreations. |
 | **Secrets Layer** | GCP Secret Manager | Stores Gemini API keys and messaging gateway tokens (Telegram, Discord, Slack) declaratively provisioned via Terraform without committing secrets. |

@@ -16,7 +16,7 @@
 - 🔒 **Zero-Trust & Keyless Authentication**: Keyless CI/CD authentication via GCP Workload Identity Federation (WIF) and GitHub Actions. No long-lived service account JSON keys.
 - 🛡️ **Guardian-Driven GitOps**: Automated `terraform plan` reviews, policy enforcement, and `apply` workflows using [`abcxyz/guardian`](https://github.com/abcxyz/guardian).
 - 💾 **Decoupled Ephemeral Compute**: VM host (`e2-small`) is disposable; SQLite state and agent memories persist on an attached 20GB GCP Persistent Disk mounted at `/opt/nanoclaw/data` via systemd mount units.
-- 🐳 **Containerized Runtime & Scheduled Sync**: Pre-built immutable container image compiled daily to GHCR from `https://github.com/Rlin1027/NanoGemClaw` for instant, fast host boots without OOM crashes.
+- 🐳 **Containerized Runtime & Scheduled Sync**: Pre-built immutable container image compiled daily to GHCR from `https://github.com/billnapier/NanoGemClaw` for instant, fast host boots without OOM crashes.
 - 🔐 **Secret Isolation**: Gemini API keys and Telegram/Discord/Slack bot tokens are declaratively provisioned in GCP Secret Manager via Terraform and retrieved securely at boot.
 - 🚫 **User Access Control**: Built-in user allowlist (`ALLOWED_USER_IDS`) prevents unauthorized access and protects your Gemini token budget.
 - 🌐 **100% Publicly Reusable**: Zero hardcoded Project IDs or private details. Fully parameterized via GitHub Actions repository variables and secrets.
