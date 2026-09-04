@@ -34,9 +34,9 @@ variable "runtime_service_account_id" {
 }
 
 variable "container_image" {
-  description = "Container image tag for NanoGemClaw runner. Defaults to alpine:latest fallback for Phase 1 decoupling."
+  description = "Container image tag for NanoGemClaw runner. Defaults to published GHCR package image."
   type        = string
-  default     = "alpine:latest"
+  default     = "ghcr.io/billnapier/nanogemclaw:latest"
 }
 
 variable "vm_machine_type" {
