@@ -11,11 +11,20 @@ ALLOWED_USER_IDS="${allowed_user_ids}"
 
 echo "=== Initializing NanoGemClaw Host ==="
 
-MOUNT_DIR="/var/lib/nanoclaw-data"
+MOUNT_DIR="/opt/nanoclaw/data"
 DISK_DEVICE="/dev/disk/by-id/google-${persistent_disk_name}"
 
-# 1. Mount Persistent Data Disk
+# 1. Mount Persistent Data Disk via Systemd Unit
 mkdir -p "$MOUNT_DIR"
+chmod 0755 "$MOUNT_DIR"
+
+echo "Waiting for block device $DISK_DEVICE..."
+POLL_ATTEMPTS=0
+until [ -b "$DISK_DEVICE" ] || [ $POLL_ATTEMPTS -ge 15 ]; do
+  echo "Waiting for $DISK_DEVICE to enumerate..."
+  sleep 2
+  POLL_ATTEMPTS=$((POLL_ATTEMPTS + 1))
+done
 
 if [ -b "$DISK_DEVICE" ]; then
   echo "Found persistent disk device: $DISK_DEVICE"
@@ -24,10 +33,24 @@ if [ -b "$DISK_DEVICE" ]; then
     mkfs.ext4 -m 0 -F -E lazy_itable_init=0,lazy_journal_init=0 "$DISK_DEVICE"
   fi
 
-  if ! mountpoint -q "$MOUNT_DIR"; then
-    echo "Mounting $DISK_DEVICE to $MOUNT_DIR..."
-    mount -o discard,defaults "$DISK_DEVICE" "$MOUNT_DIR"
-  fi
+  cat <<UNIT > /etc/systemd/system/opt-nanoclaw-data.mount
+[Unit]
+Description=NanoGemClaw Persistent Data Mount
+Before=local-fs.target
+
+[Mount]
+What=$DISK_DEVICE
+Where=/opt/nanoclaw/data
+Type=ext4
+Options=discard,defaults,nofail
+
+[Install]
+WantedBy=local-fs.target
+UNIT
+
+  echo "Enabling and starting opt-nanoclaw-data.mount systemd unit..."
+  systemctl daemon-reload
+  systemctl enable --now opt-nanoclaw-data.mount || true
 else
   echo "WARNING: Persistent disk $DISK_DEVICE not detected at boot."
 fi
