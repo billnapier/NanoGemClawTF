@@ -59,7 +59,7 @@ EOF
         with:
           images: ghcr.io/${{ github.repository_owner }}/nanogemclaw
           tags: |
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' }}
+            type=raw,value=latest
             type=sha,prefix=sha-
             type=raw,value={{date 'YYYYMMDD'}}
 
