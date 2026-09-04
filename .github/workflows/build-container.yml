@@ -32,6 +32,27 @@ jobs:
           repository: ${{ inputs.repository || 'Rlin1027/NanoGemClaw' }}
           path: nanogemclaw-src
 
+      - name: Ensure Dockerfile Exists
+        run: |
+          if [ ! -f nanogemclaw-src/Dockerfile ]; then
+            echo "Creating default Dockerfile for NanoGemClaw..."
+            cat << 'EOF' > nanogemclaw-src/Dockerfile
+          FROM node:20-slim AS builder
+          WORKDIR /app
+          COPY package*.json ./
+          RUN npm install --ignore-scripts
+          COPY . .
+          RUN npm run build || npx tsc || true
+
+          FROM node:20-slim
+          WORKDIR /app
+          ENV NODE_ENV=production
+          COPY --from=builder /app ./
+          EXPOSE 8080
+          CMD ["node", "dist/index.js"]
+          EOF
+          fi
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
