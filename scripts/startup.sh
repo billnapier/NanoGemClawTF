@@ -102,9 +102,32 @@ if ! command -v docker &> /dev/null; then
   apt-get install -y docker-ce docker-ce-cli containerd.io
 fi
 
-# 4. Pull & Initialize Agent Container (Fallback: alpine:latest)
+# 4. Provision & Start Systemd Container Service Unit
 IMAGE="${container_image}"
-echo "Pulling container image: $IMAGE..."
-docker pull "$IMAGE" || echo "Warning: Failed to pull $IMAGE, using local cache if present."
+echo "Registering systemd container service for image: $IMAGE..."
+
+cat <<SERVICE > /etc/systemd/system/nanoclaw-container.service
+[Unit]
+Description=NanoGemClaw Container Daemon
+Requires=opt-nanoclaw-data.mount docker.service
+After=opt-nanoclaw-data.mount docker.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=10
+ExecStartPre=-/usr/bin/docker stop nanogemclaw-agent
+ExecStartPre=-/usr/bin/docker rm nanogemclaw-agent
+ExecStartPre=/usr/bin/docker pull $IMAGE
+ExecStart=/usr/bin/docker run --name nanogemclaw-agent --env-file /opt/nanoclaw/config/env.list -v /opt/nanoclaw/data:/opt/nanoclaw/data -v /var/run/docker.sock:/var/run/docker.sock $IMAGE
+ExecStop=/usr/bin/docker stop nanogemclaw-agent
+
+[Install]
+WantedBy=multi-user.target
+SERVICE
+
+echo "Enabling and starting nanoclaw-container.service systemd unit..."
+systemctl daemon-reload
+systemctl enable --now nanoclaw-container.service || true
 
 echo "=== NanoGemClaw Startup Initialization Complete ==="
