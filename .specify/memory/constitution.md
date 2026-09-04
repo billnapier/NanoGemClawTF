@@ -1,14 +1,14 @@
 <!--
 SYNC IMPACT REPORT
-- Version change: 1.3.0 → 1.4.0
+- Version change: 1.4.0 → 1.5.0
 - Ratification Date: 2026-09-04
 - Last Amended Date: 2026-09-04
 - Modified Principles:
-  - Added Principle 8: Mandatory Comprehensive Automated Testing & Required PR Gates (mandating tests everywhere feasible, running automated tests on all PRs, and requiring green test passes prior to merging).
+  - Added Principle 9: Clean Git History, PR Hygiene & Upstream Sync (mandating clean, linear commit history rebased on HEAD, zero duplicated commits in PRs, and mandatory pre-PR upstream sync).
 - Added/Updated Sections:
-  - Added Principle 8 to Section 2 (Core Non-Negotiable Principles).
-  - Updated Section 3 (Tech Stack & Architecture Constraints) to include mandatory automated CI testing and required status checks.
-  - Updated Section 4 (Governance & Amendment Policy) compliance verification to encompass all 8 principles.
+  - Added Principle 9 to Section 2 (Core Non-Negotiable Principles).
+  - Updated Section 3 (Tech Stack & Architecture Constraints) to include clean git history and upstream sync constraints.
+  - Updated Section 4 (Governance & Amendment Policy) compliance verification to encompass all 9 principles.
 - Templates Status:
   - ✅ .specify/templates/spec-template.md
   - ✅ .specify/templates/plan-template.md
@@ -18,7 +18,7 @@ SYNC IMPACT REPORT
 
 # NanoGemClawTF Project Constitution
 
-**Version:** 1.4.0  
+**Version:** 1.5.0  
 **Ratification Date:** 2026-09-04  
 **Last Amended Date:** 2026-09-04  
 
@@ -36,6 +36,7 @@ The scope encompasses:
 - Ephemeral container sandboxing for personal agent tool execution.
 - Human-facing documentation (`docs/quickstart.md`) paired with executable Antigravity skills for non-IaC bootstrapping steps.
 - Comprehensive automated test validation on every pull request enforced via mandatory GitHub Actions PR gates.
+- Strict git commit hygiene and clean PR diffs continuously rebased on `HEAD` (`origin/main`).
 
 ---
 
@@ -73,6 +74,10 @@ The scope encompasses:
 - **Rule:** Automated tests MUST be implemented across all manageable components (including `terraform validate` and `terraform fmt` checks for HCL, static analysis and syntax checks for shell scripts, unit/contract tests for runtime scripts, and non-destructive verification scripts). ALL automated tests MUST execute on every GitHub Actions Pull Request trigger, and passing status checks MUST be required before any Pull Request can be merged into `main`.
 - **Rationale:** Eliminates manual testing oversights, guarantees zero regression across PRs, and ensures that broken infrastructure or script code is prevented from reaching production branches.
 
+### Principle 9: Clean Git History, PR Hygiene & Upstream Sync
+- **Rule:** Every Pull Request MUST maintain a clean, linear commit history strictly rebased on top of `HEAD` (`origin/main`). A Pull Request MUST NEVER contain duplicate commits or commits that are already merged into `main`. Feature branches MUST be synced with the latest upstream `main` prior to execution, task commits, and PR creation.
+- **Rationale:** Prevents merge noise, avoids re-reviewing already-approved changes, and guarantees clean, atomic history across all pull requests.
+
 ---
 
 ## 3. Tech Stack & Architecture Constraints
@@ -82,6 +87,7 @@ The scope encompasses:
 - **Parameterization:** All GCP Project IDs, region/zone settings, state bucket configurations, and IAM identifiers MUST be parameterized via Terraform variables (`variables.tf`) and injected via GitHub Actions repository variables (`vars.*`).
 - **Bootstrap Automation:** One-time GCP bootstrap steps documented in `docs/quickstart.md` and automated via an Antigravity `quickstart` skill.
 - **Automated Testing & Gates:** Mandatory CI automated test runs (`terraform validate`, `terraform fmt`, shell script validation, non-destructive test scripts) on all PRs configured as required GitHub merge checks.
+- **Git & PR Hygiene:** Clean, linear commit history rebased on `HEAD` (`origin/main`) with zero duplicate or already-merged commits.
 - **State Backend:** Configurable GCP Cloud Storage (GCS) backend initialized via backend configuration parameters (`-backend-config`).
 - **Cloud Provider:** Google Cloud Platform (GCP), region/zone-configurable via Terraform variables.
 - **Host OS:** Debian 12 (Compute Engine `e2-small` instance).
@@ -98,4 +104,4 @@ The scope encompasses:
    - **MAJOR (X.0.0):** Removal or fundamental redefinition of core non-negotiable principles or security architecture.
    - **MINOR (1.X.0):** Addition of new principles, tech stack expansions, or structural governance updates.
    - **PATCH (1.0.X):** Wording clarifications, typo fixes, or non-semantic refinements.
-3. **Compliance Verification:** All pull requests and infrastructure specs MUST be validated against these 8 core principles prior to approval.
+3. **Compliance Verification:** All pull requests and infrastructure specs MUST be validated against these 9 core principles prior to approval.
