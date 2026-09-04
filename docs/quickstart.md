@@ -18,6 +18,27 @@ Before starting, ensure you have:
 
 ## Step 1: Bootstrap GCP Prerequisites (One-Time Setup)
 
+### Option A: Automated Bootstrap (Recommended)
+
+Set your environment variables and execute the single-command bootstrap script:
+
+```bash
+export GCP_PROJECT_ID="your-gcp-project-id"
+export GITHUB_REPO="your-github-username/NanoGemClawTF"
+
+./scripts/bootstrap_gcp_foundation.sh
+```
+
+To verify your bootstrap configuration non-destructively at any time:
+
+```bash
+./scripts/verify_wif_bootstrap.sh
+```
+
+---
+
+### Option B: Manual Step-by-Step Setup
+
 Set your target GCP Project ID in your terminal:
 
 ```bash
