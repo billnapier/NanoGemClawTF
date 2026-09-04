@@ -1,7 +1,7 @@
 # Speckit Status Dashboard
 
-**Generated**: 2026-09-04 10:21:00 UTC  
-**Total Features**: 12
+**Generated**: 2026-09-04 10:32:00 UTC  
+**Total Features**: 16  
 
 ## Overview
 
@@ -19,10 +19,14 @@
 | `010-secret-manager-env-config` | Implement | 100% | 0 | Merged to `main` via PR #15 |
 | `011-container-daemon-orchestration` | Implement | 100% | 0 | Merged to `main` via PR #16 |
 | `012-disruption-reboot-recovery-test` | Implement | 100% | 0 | Merged to `main` via PR #17 |
+| `013-telegram-messaging-e2e-verification` | Implement | 100% | 0 | Merged to `main` via PR #19 |
+| `014-access-control-security-enforcement` | Implement | 100% | 0 | Merged to `main` via PR #20 |
+| `015-automated-daily-disk-snapshots` | Implement | 100% | 0 | Merged to `main` via PR #21 |
+| `016-observability-journalctl-runbooks` | Implement | 100% | 0 | Merged to `main` via PR #22 |
 
 ## Summary
 
-- **Features Fully Implemented**: 12 / 12 (100%)
-- **Features Pending Planning / Execution**: 0 / 12 (0%)
+- **Features Fully Implemented**: 16 / 16 (100%)
+- **Features Pending Planning / Execution**: 0 / 16 (0%)
 - **Features Blocked**: 0
 - **Overall Project Completion**: 100%
