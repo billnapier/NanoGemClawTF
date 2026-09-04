@@ -8,7 +8,7 @@ resource "google_service_account" "agent_runtime_sa" {
 # Secret Accessor IAM Member Binding for Gemini API Key Secret
 resource "google_secret_manager_secret_iam_member" "gemini_secret_accessor" {
   project   = var.project_id
-  secret_id = google_secret_manager_secret.gemini_api_key.secret_id
+  secret_id = google_secret_manager_secret.gemini_api_key.id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.agent_runtime_sa.email}"
 }
@@ -16,7 +16,7 @@ resource "google_secret_manager_secret_iam_member" "gemini_secret_accessor" {
 # Secret Accessor IAM Member Binding for Telegram Bot Token Secret
 resource "google_secret_manager_secret_iam_member" "telegram_secret_accessor" {
   project   = var.project_id
-  secret_id = google_secret_manager_secret.telegram_bot_token.secret_id
+  secret_id = google_secret_manager_secret.telegram_bot_token.id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.agent_runtime_sa.email}"
 }
