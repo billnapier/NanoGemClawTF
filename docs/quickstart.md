@@ -1,5 +1,8 @@
 # NanoGemClawTF Deployment Quickstart 🚀
 
+> [!IMPORTANT]
+> **Synchronization Policy**: Per Constitution Principle 7, all manual operational steps (not provisioned via IaC) MUST be documented in this guide. This document (`docs/quickstart.md`) and the executable quickstart skill (`nanogemclaw.bootstrap`) MUST be kept strictly in sync at all times. Whenever either file is updated, the corresponding counterpart MUST be audited and updated simultaneously.
+
 This step-by-step guide will walk you through setting up Google Cloud Platform (GCP), configuring GitHub Actions keyless authentication (Workload Identity Federation), and deploying your personal **NanoGemClaw** agent in under 10 minutes.
 
 ---
@@ -92,6 +95,10 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member="serviceAccount:terraform-deployer@${PROJECT_ID}.iam.gserviceaccount.com" \
   --role="roles/resourcemanager.projectIamAdmin"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:terraform-deployer@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --role="roles/storage.admin"
 ```
 
 ### 1.4 Configure Workload Identity Federation (WIF)

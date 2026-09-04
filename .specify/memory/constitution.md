@@ -1,14 +1,14 @@
 <!--
 SYNC IMPACT REPORT
-- Version change: 1.4.0 → 1.5.0
+- Version change: 1.5.0 → 1.6.0
 - Ratification Date: 2026-09-04
 - Last Amended Date: 2026-09-04
 - Modified Principles:
-  - Added Principle 9: Clean Git History, PR Hygiene & Upstream Sync (mandating clean, linear commit history rebased on HEAD, zero duplicated commits in PRs, and mandatory pre-PR upstream sync).
+  - Updated Principle 7: Mandated that ALL manual/non-IaC operational and setup steps MUST be documented in docs/quickstart.md, and that docs/quickstart.md and the quickstart skill (nanogemclaw.bootstrap) MUST be kept strictly in sync at all times.
 - Added/Updated Sections:
-  - Added Principle 9 to Section 2 (Core Non-Negotiable Principles).
-  - Updated Section 3 (Tech Stack & Architecture Constraints) to include clean git history and upstream sync constraints.
-  - Updated Section 4 (Governance & Amendment Policy) compliance verification to encompass all 9 principles.
+  - Updated Section 1 (Project Vision & Scope) to include strict synchronization between manual quickstart docs and quickstart skills.
+  - Updated Section 2 (Principle 7) to mandate dual-maintenance and mutual audit whenever either docs/quickstart.md or the quickstart skill is modified.
+  - Updated Section 3 (Tech Stack & Architecture Constraints) to enforce quickstart sync governance.
 - Templates Status:
   - ✅ .specify/templates/spec-template.md
   - ✅ .specify/templates/plan-template.md
@@ -18,7 +18,7 @@ SYNC IMPACT REPORT
 
 # NanoGemClawTF Project Constitution
 
-**Version:** 1.5.0  
+**Version:** 1.6.0  
 **Ratification Date:** 2026-09-04  
 **Last Amended Date:** 2026-09-04  
 
@@ -34,7 +34,7 @@ The scope encompasses:
 - 100% forkable, parameter-driven design with strict zero-leakage protection for public repository safety.
 - Secure runtime host configuration, persistent disk isolation, and secret management.
 - Ephemeral container sandboxing for personal agent tool execution.
-- Human-facing documentation (`docs/quickstart.md`) paired with executable Antigravity skills for non-IaC bootstrapping steps.
+- Human-facing documentation (`docs/quickstart.md`) paired with executable Antigravity skills (`nanogemclaw.bootstrap`) for non-IaC manual setup steps, maintained in 100% continuous synchronization.
 - Comprehensive automated test validation on every pull request enforced via mandatory GitHub Actions PR gates.
 - Strict git commit hygiene and clean PR diffs continuously rebased on `HEAD` (`origin/main`).
 
@@ -66,9 +66,9 @@ The scope encompasses:
 - **Rule:** Infrastructure choices MUST prioritize minimal idle resource consumption and predictable monthly budgets (~$16/month baseline). Automated lifecycle policies, resource rightsizing, and minimal background daemons MUST be enforced.
 - **Rationale:** Keeps operating costs low and avoids resource creep while delivering high performance for personal agent automation.
 
-### Principle 7: One-Time Bootstrap Documentation & Automated Skill Provisioning
-- **Rule:** Operations that cannot be provisioned via declarative IaC—specifically one-time GCP bootstrap prerequisites such as GCP API enablement, Terraform GCS state bucket creation, Workload Identity Federation pool/provider creation, and initial deployer service account IAM delegation—MUST be strictly isolated to the initial bootstrap setup. These non-IaC bootstrap steps MUST be dual-documented: thoroughly detailed for human maintainers in `docs/quickstart.md` AND packaged as an executable Antigravity skill (`quickstart` skill) to allow 100% automated bootstrap execution by AI pair programmers.
-- **Rationale:** Ensures that non-IaC prerequisite tasks are completely reproducible, automated for AI coding assistants, and transparently documented for human operators without introducing untracked manual deployment blockers or environmental drift.
+### Principle 7: Mandatory Quickstart Documentation & Continuous Skill Synchronization
+- **Rule:** ANY operational, setup, or configuration steps that cannot be provisioned via declarative IaC (including one-time GCP foundation bootstrap prerequisites, secret/variable collection, and manual platform setup) MUST be thoroughly documented in `docs/quickstart.md`. The human-facing documentation (`docs/quickstart.md`) and the executable quickstart skill (`nanogemclaw.bootstrap` / `quickstart` skill) MUST be kept strictly in sync at all times. Whenever either `docs/quickstart.md` or the quickstart skill is modified, the maintainer or AI agent MUST immediately review and update the corresponding counterpart to maintain full parity.
+- **Rationale:** Ensures that non-IaC operational procedures are completely reproducible, fully automated for AI coding assistants, and transparently documented for human maintainers without introducing desynchronized instructions or untracked manual deployment blockers.
 
 ### Principle 8: Mandatory Comprehensive Automated Testing & Required PR Gates
 - **Rule:** Automated tests MUST be implemented across all manageable components (including `terraform validate` and `terraform fmt` checks for HCL, static analysis and syntax checks for shell scripts, unit/contract tests for runtime scripts, and non-destructive verification scripts). ALL automated tests MUST execute on every GitHub Actions Pull Request trigger, and passing status checks MUST be required before any Pull Request can be merged into `main`.
@@ -85,7 +85,7 @@ The scope encompasses:
 - **IaC Engine:** Terraform `>= 1.5.0` with standard HashiCorp Google provider (`~> 5.0`).
 - **IaC Automation & Governance:** **abcxyz/guardian** (`github.com/abcxyz/guardian`) for automated workflows, plan reviews, policy checks, and apply execution.
 - **Parameterization:** All GCP Project IDs, region/zone settings, state bucket configurations, and IAM identifiers MUST be parameterized via Terraform variables (`variables.tf`) and injected via GitHub Actions repository variables (`vars.*`).
-- **Bootstrap Automation:** One-time GCP bootstrap steps documented in `docs/quickstart.md` and automated via an Antigravity `quickstart` skill.
+- **Bootstrap Automation & Sync Governance:** All non-IaC manual setup steps are documented in `docs/quickstart.md` and packaged into the executable `nanogemclaw.bootstrap` Antigravity skill, strictly kept in 100% continuous synchronization.
 - **Automated Testing & Gates:** Mandatory CI automated test runs (`terraform validate`, `terraform fmt`, shell script validation, non-destructive test scripts) on all PRs configured as required GitHub merge checks.
 - **Git & PR Hygiene:** Clean, linear commit history rebased on `HEAD` (`origin/main`) with zero duplicate or already-merged commits.
 - **State Backend:** Configurable GCP Cloud Storage (GCS) backend initialized via backend configuration parameters (`-backend-config`).
