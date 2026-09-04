@@ -3,7 +3,6 @@
 **Status:** Approved  
 **Author:** Engineering  
 **Last Updated:** September 2026  
-<!-- Test update for PR Terraform plan workflow verification -->  
 
 ---
 
