@@ -1,12 +1,13 @@
 <!--
 SYNC IMPACT REPORT
-- Version change: 1.1.0 → 1.2.0
+- Version change: 1.2.0 → 1.3.0
 - Ratification Date: 2026-09-04
 - Last Amended Date: 2026-09-04
 - Modified Principles:
-  - Added Principle 3: Public Reusability, Forkability & Zero Private Leakage (mandating 100% parameterization via GitHub Actions variables/secrets with zero hardcoded private values).
-  - Renumbered subsequent principles (Decoupled State → Principle 4, Least Privilege → Principle 5, Predictable Cost → Principle 6).
-- Added/Updated Sections: Tech Stack & Architecture Constraints updated with strict parameterization rules.
+  - Added Principle 7: One-Time Bootstrap Documentation & Automated Skill Provisioning (mandating dual documentation in `docs/quickstart.md` and an executable Antigravity quickstart skill for non-IaC bootstrap operations).
+- Added/Updated Sections:
+  - Added Principle 7 to Section 2 (Core Non-Negotiable Principles).
+  - Updated Section 1 and Section 3 to encompass Antigravity skill automation for non-IaC prerequisites.
 - Templates Status:
   - ✅ .specify/templates/spec-template.md
   - ✅ .specify/templates/plan-template.md
@@ -16,7 +17,7 @@ SYNC IMPACT REPORT
 
 # NanoGemClawTF Project Constitution
 
-**Version:** 1.2.0  
+**Version:** 1.3.0  
 **Ratification Date:** 2026-09-04  
 **Last Amended Date:** 2026-09-04  
 
@@ -32,6 +33,7 @@ The scope encompasses:
 - 100% forkable, parameter-driven design with strict zero-leakage protection for public repository safety.
 - Secure runtime host configuration, persistent disk isolation, and secret management.
 - Ephemeral container sandboxing for personal agent tool execution.
+- Human-facing documentation (`docs/quickstart.md`) paired with executable Antigravity skills for non-IaC bootstrapping steps.
 
 ---
 
@@ -61,6 +63,10 @@ The scope encompasses:
 - **Rule:** Infrastructure choices MUST prioritize minimal idle resource consumption and predictable monthly budgets (~$16/month baseline). Automated lifecycle policies, resource rightsizing, and minimal background daemons MUST be enforced.
 - **Rationale:** Keeps operating costs low and avoids resource creep while delivering high performance for personal agent automation.
 
+### Principle 7: One-Time Bootstrap Documentation & Automated Skill Provisioning
+- **Rule:** Operations that cannot be provisioned via declarative IaC—specifically one-time GCP bootstrap prerequisites such as GCP API enablement, Terraform GCS state bucket creation, Workload Identity Federation pool/provider creation, and initial deployer service account IAM delegation—MUST be strictly isolated to the initial bootstrap setup. These non-IaC bootstrap steps MUST be dual-documented: thoroughly detailed for human maintainers in `docs/quickstart.md` AND packaged as an executable Antigravity skill (`quickstart` skill) to allow 100% automated bootstrap execution by AI pair programmers.
+- **Rationale:** Ensures that non-IaC prerequisite tasks are completely reproducible, automated for AI coding assistants, and transparently documented for human operators without introducing untracked manual deployment blockers or environmental drift.
+
 ---
 
 ## 3. Tech Stack & Architecture Constraints
@@ -68,6 +74,7 @@ The scope encompasses:
 - **IaC Engine:** Terraform `>= 1.5.0` with standard HashiCorp Google provider (`~> 5.0`).
 - **IaC Automation & Governance:** **abcxyz/guardian** (`github.com/abcxyz/guardian`) for automated workflows, plan reviews, policy checks, and apply execution.
 - **Parameterization:** All GCP Project IDs, region/zone settings, state bucket configurations, and IAM identifiers MUST be parameterized via Terraform variables (`variables.tf`) and injected via GitHub Actions repository variables (`vars.*`).
+- **Bootstrap Automation:** One-time GCP bootstrap steps documented in `docs/quickstart.md` and automated via an Antigravity `quickstart` skill.
 - **State Backend:** Configurable GCP Cloud Storage (GCS) backend initialized via backend configuration parameters (`-backend-config`).
 - **Cloud Provider:** Google Cloud Platform (GCP), region/zone-configurable via Terraform variables.
 - **Host OS:** Debian 12 (Compute Engine `e2-small` instance).
@@ -84,4 +91,4 @@ The scope encompasses:
    - **MAJOR (X.0.0):** Removal or fundamental redefinition of core non-negotiable principles or security architecture.
    - **MINOR (1.X.0):** Addition of new principles, tech stack expansions, or structural governance updates.
    - **PATCH (1.0.X):** Wording clarifications, typo fixes, or non-semantic refinements.
-3. **Compliance Verification:** All pull requests and infrastructure specs MUST be validated against these 6 core principles prior to approval.
+3. **Compliance Verification:** All pull requests and infrastructure specs MUST be validated against these 7 core principles prior to approval.
