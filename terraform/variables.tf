@@ -71,6 +71,12 @@ variable "gemini_api_key_initial_value" {
   default     = "placeholder-gemini-key"
 }
 
+variable "telegram_bot_token_secret_id" {
+  description = "Secret Manager secret ID for Telegram bot token."
+  type        = string
+  default     = "telegram-bot-token"
+}
+
 variable "telegram_bot_token" {
   description = "Telegram bot token."
   type        = string
