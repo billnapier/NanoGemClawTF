@@ -35,10 +35,13 @@ jobs:
           terraform_version: '1.5.7'
 
       - name: Setup Guardian CLI
-        uses: abcxyz/pkg/actions/setup-binary@v1
+        uses: abcxyz/actions/.github/actions/setup-binary@main
         with:
-          name: 'guardian'
-          repo: 'abcxyz/guardian'
+          download_url: 'https://github.com/abcxyz/guardian/releases/download/v3.2.5/guardian_3.2.5_linux_amd64.tar.gz'
+          install_path: '${{ runner.temp }}/.guardian'
+          binary_subpath: 'guardian'
+          cache_key: '${{ runner.os }}_${{ runner.arch }}_guardian_v3.2.5'
+          add_to_path: true
 
       - name: Execute Guardian Plan
         env:
