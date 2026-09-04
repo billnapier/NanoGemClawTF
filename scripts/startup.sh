@@ -120,7 +120,7 @@ RestartSec=10
 ExecStartPre=-/usr/bin/docker stop nanogemclaw-agent
 ExecStartPre=-/usr/bin/docker rm nanogemclaw-agent
 ExecStartPre=/usr/bin/docker pull $IMAGE
-ExecStart=/usr/bin/docker run --name nanogemclaw-agent --env-file /opt/nanoclaw/config/env.list -v /opt/nanoclaw/data:/opt/nanoclaw/data -v /var/run/docker.sock:/var/run/docker.sock $IMAGE
+ExecStart=/usr/bin/docker run --name nanogemclaw-agent --env-file /opt/nanoclaw/config/env.list -p 127.0.0.1:3000:3000 -v /opt/nanoclaw/data:/opt/nanoclaw/data -v /var/run/docker.sock:/var/run/docker.sock $IMAGE
 ExecStop=/usr/bin/docker stop nanogemclaw-agent
 
 [Install]
