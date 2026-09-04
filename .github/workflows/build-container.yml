@@ -35,19 +35,19 @@ jobs:
           if [ ! -f nanogemclaw-src/Dockerfile ]; then
             echo "Creating default Dockerfile for NanoGemClaw..."
             cat << 'EOF' > nanogemclaw-src/Dockerfile
-FROM node:20-slim AS builder
-WORKDIR /app
-COPY . .
-RUN npm install
-RUN npm run build || true
+          FROM node:20-slim AS builder
+          WORKDIR /app
+          COPY . .
+          RUN npm install
+          RUN npm run build || true
 
-FROM node:20-slim
-WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=builder /app ./
-EXPOSE 8080 3000
-CMD ["npx", "tsx", "src/index.ts"]
-EOF
+          FROM node:20-slim
+          WORKDIR /app
+          ENV NODE_ENV=production
+          COPY --from=builder /app ./
+          EXPOSE 8080 3000
+          CMD ["npx", "tsx", "src/index.ts"]
+          EOF
           fi
 
       - name: Set up Docker Buildx
