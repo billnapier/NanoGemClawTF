@@ -1,7 +1,7 @@
 # Research: Guardian CI/CD Workflows & Policy Integration
 
 ## Decision 1: Use `abcxyz/guardian` for GitHub Actions Terraform Governance
-- **Decision**: Integrate `abcxyz/guardian/actions/setup@v1` with Terraform `1.5.8` in GitHub Actions for PR plan reviews and `main` apply execution.
+- **Decision**: Integrate `hashicorp/setup-terraform@v3` with Terraform `1.5.7` and `abcxyz/pkg/actions/setup-binary@v1` for Guardian CLI in GitHub Actions for PR plan reviews and `main` apply execution.
 - **Rationale**: `abcxyz/guardian` provides automated plan commenting on PRs, policy enforcement, secure execution in GCP contexts, and declarative apply workflows on merge.
 - **Alternatives Considered**: 
   - Standard HashiCorp `setup-terraform` + raw `terraform plan/apply` shell steps: Lacks built-in PR plan commenting, Guardian security governance policy checks, and structured entrypoint management.

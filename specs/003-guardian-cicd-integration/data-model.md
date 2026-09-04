@@ -17,7 +17,7 @@
 - **Execution Steps**:
   1. Checkout repository code.
   2. GCP WIF Authentication (`google-github-actions/auth@v2`).
-  3. Setup Guardian & Terraform (`abcxyz/guardian/actions/setup@v1`).
+  3. Setup Terraform (`hashicorp/setup-terraform@v3` with `1.5.7`) and Guardian CLI (`abcxyz/pkg/actions/setup-binary@v1`).
   4. Run `guardian entrypoints plan` with `-backend-config="bucket=${{ vars.GCP_TF_STATE_BUCKET }}"`.
 
 ### 2. GitHub Actions Workflow: `terraform-apply.yml`
@@ -28,9 +28,9 @@
 - **Execution Steps**:
   1. Checkout repository code.
   2. GCP WIF Authentication (`google-github-actions/auth@v2`).
-  3. Setup Guardian & Terraform (`abcxyz/guardian/actions/setup@v1`).
+  3. Setup Terraform (`hashicorp/setup-terraform@v3` with `1.5.7`) and Guardian CLI (`abcxyz/pkg/actions/setup-binary@v1`).
   4. Run `guardian entrypoints apply` with `-backend-config="bucket=${{ vars.GCP_TF_STATE_BUCKET }}"`.
 
 ### 3. Guardian Configuration File (`.guardianrc` or workflow CLI flags)
 - Working Directory: `terraform`
-- Terraform Version: `1.5.8`
+- Terraform Version: `1.5.7`
