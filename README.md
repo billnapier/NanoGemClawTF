@@ -15,8 +15,9 @@
 
 - 🔒 **Zero-Trust & Keyless Authentication**: Keyless CI/CD authentication via GCP Workload Identity Federation (WIF) and GitHub Actions. No long-lived service account JSON keys.
 - 🛡️ **Guardian-Driven GitOps**: Automated `terraform plan` reviews, policy enforcement, and `apply` workflows using [`abcxyz/guardian`](https://github.com/abcxyz/guardian).
-- 💾 **Decoupled Ephemeral Compute**: VM host (`e2-small`) is disposable; SQLite state and agent memories persist on an attached 20GB GCP Persistent Disk mounted at `/opt/nanoclaw/data`.
-- 🔐 **Secret Isolation**: Gemini API keys and Telegram/Discord/Slack bot tokens are securely stored in GCP Secret Manager and retrieved at host boot.
+- 💾 **Decoupled Ephemeral Compute**: VM host (`e2-small`) is disposable; SQLite state and agent memories persist on an attached 20GB GCP Persistent Disk mounted at `/opt/nanoclaw/data` via systemd mount units.
+- 🐳 **Containerized Runtime & Scheduled Sync**: Pre-built immutable container image compiled daily to GHCR from `https://github.com/Rlin1027/NanoGemClaw` for instant, fast host boots without OOM crashes.
+- 🔐 **Secret Isolation**: Gemini API keys and Telegram/Discord/Slack bot tokens are declaratively provisioned in GCP Secret Manager via Terraform and retrieved securely at boot.
 - 🚫 **User Access Control**: Built-in user allowlist (`ALLOWED_USER_IDS`) prevents unauthorized access and protects your Gemini token budget.
 - 🌐 **100% Publicly Reusable**: Zero hardcoded Project IDs or private details. Fully parameterized via GitHub Actions repository variables and secrets.
 
@@ -27,7 +28,7 @@
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
 │                          GitHub Repository                             │
-│                     (Actions + abcxyz/guardian)                        │
+│       (Actions + GHCR Container Build + abcxyz/guardian)               │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │ Workload Identity Federation (WIF)
                                     ▼
@@ -39,7 +40,7 @@
 │  │ (Gemini Key, Bot Tokens)│         │         (e2-small)           │  │
 │  └────────────┬────────────┘         │                              │  │
 │               │ Dynamic fetch        │  ┌────────────────────────┐  │  │
-│               └─────────────────────►│  │ NanoGemClaw Host Daemon│  │  │
+│               └─────────────────────►│  │ Docker Container Daemon│  │  │
 │                                      │  └───────────┬────────────┘  │  │
 │                                      │              │ Container     │  │
 │  ┌─────────────────────────┐         │              ▼ Sandbox       │  │
@@ -50,9 +51,9 @@
 └─────────────────────────────────────────────────────┼──────────────────┘
                                                       │ Messaging Gateway
                                                       ▼ (Telegram/Discord/Slack)
-                                                ┌───────────┐
-                                                │   User    │
-                                                └───────────┘
+                                                 ┌───────────┐
+                                                 │   User    │
+                                                 └───────────┘
 ```
 
 ---
@@ -71,6 +72,7 @@ Configure the following in your repository under **Settings → Secrets and vari
 | `GCP_PROJECT_ID` | Your Google Cloud Project ID | `my-gemini-agent-prod` |
 | `GCP_REGION` | GCP Compute Region | `us-central1` |
 | `GCP_ZONE` | GCP Compute Zone | `us-central1-a` |
+| `GCP_TF_STATE_BUCKET` | GCP Storage Bucket for Terraform state | `my-gemini-agent-prod-nanoclaw-tfstate` |
 | `GCP_WIF_PROVIDER` | Workload Identity Provider resource string | `projects/1234/locations/global/workloadIdentityPools/...` |
 | `GCP_SERVICE_ACCOUNT` | Terraform deployer service account email | `terraform-deployer@my-proj.iam.gserviceaccount.com` |
 | `ALLOWED_USER_IDS` | Comma-separated allowed messaging user IDs | `123456789` |
@@ -86,7 +88,7 @@ Configure the following in your repository under **Settings → Secrets and vari
 ## 📚 Documentation
 
 - 📖 **[Deployment Quickstart](docs/quickstart.md)** — Step-by-step setup guide for GCP, GitHub Actions, and initial deployment.
-- 📐 **[Architecture Design Doc](docs/Overview.md)** — Detailed specification of GCP infrastructure, security boundaries, and startup scripts.
+- 📐 **[Architecture Design Doc](docs/Overview.md)** — Detailed specification of GCP infrastructure, security boundaries, container runtimes, and systemd mount units.
 - 📜 **[Project Constitution](.specify/memory/constitution.md)** — Governance rules, security principles, and non-negotiables.
 
 ---

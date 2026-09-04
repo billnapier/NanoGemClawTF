@@ -8,10 +8,11 @@ This step-by-step guide will walk you through setting up Google Cloud Platform (
 
 Before starting, ensure you have:
 1. A **Google Cloud Platform (GCP)** account with billing enabled.
-2. A **Google Gemini API Key** from [Google AI Studio](https://aistudio.google.com/).
-3. A **Telegram Bot Token** from [@BotFather](https://t.me/BotFather) (or Discord/Slack bot token).
-4. Your personal **Telegram User ID** (get it via [@userinfobot](https://t.me/userinfobot)).
-5. The `gcloud` CLI installed locally (optional, for initial GCP bootstrap).
+2. A **GCP Storage Bucket** for Terraform state management.
+3. A **Google Gemini API Key** from [Google AI Studio](https://aistudio.google.com/).
+4. A **Telegram Bot Token** from [@BotFather](https://t.me/BotFather) (or Discord/Slack bot token).
+5. Your personal **Telegram User ID** (get it via [@userinfobot](https://t.me/userinfobot)).
+6. The `gcloud` CLI installed locally (optional, for initial GCP bootstrap).
 
 ---
 
@@ -33,16 +34,24 @@ gcloud services enable \
   iam.googleapis.com \
   cloudresourcemanager.googleapis.com \
   iamcredentials.googleapis.com \
-  sts.googleapis.com
+  sts.googleapis.com \
+  storage.googleapis.com
 ```
 
-### 1.2 Create Terraform Deployer Service Account
+### 1.2 Create Terraform State Bucket
+
+```bash
+export BUCKET_NAME="${PROJECT_ID}-nanoclaw-tfstate"
+gcloud storage buckets create gs://${BUCKET_NAME} --location=us-central1
+```
+
+### 1.3 Create Terraform Deployer Service Account
 
 ```bash
 gcloud iam service-accounts create terraform-deployer \
   --display-name="Terraform Deployer SA for GitHub Actions"
 
-# Grant Editor / Admin roles required for Compute & Secret Manager
+# Grant Editor / Admin roles required for Compute, Secret Manager, and Storage
 gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member="serviceAccount:terraform-deployer@${PROJECT_ID}.iam.gserviceaccount.com" \
   --role="roles/editor"
@@ -52,7 +61,7 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
   --role="roles/resourcemanager.projectIamAdmin"
 ```
 
-### 1.3 Configure Workload Identity Federation (WIF)
+### 1.4 Configure Workload Identity Federation (WIF)
 
 Replace `YOUR_GITHUB_ORG/YOUR_REPO` with your GitHub username and repository name:
 
@@ -94,17 +103,18 @@ echo "projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/github-p
 In your forked GitHub repository, navigate to **Settings → Secrets and variables → Actions**.
 
 ### Add Variables (`Repository variables` tab)
-| Variable Name | Value |
-| :--- | :--- |
-| `GCP_PROJECT_ID` | `your-gcp-project-id` |
-| `GCP_REGION` | `us-central1` (or your preferred region) |
-| `GCP_ZONE` | `us-central1-a` |
-| `GCP_WIF_PROVIDER` | Output from step 1.3 (`projects/1234.../providers/github-provider`) |
-| `GCP_SERVICE_ACCOUNT` | `terraform-deployer@your-gcp-project-id.iam.gserviceaccount.com` |
-| `ALLOWED_USER_IDS` | Your Telegram User ID (e.g. `123456789`) |
+| Variable Name | Description | Example |
+| :--- | :--- | :--- |
+| `GCP_PROJECT_ID` | Your Google Cloud Project ID | `my-gemini-agent-prod` |
+| `GCP_REGION` | GCP Compute Region | `us-central1` |
+| `GCP_ZONE` | GCP Compute Zone | `us-central1-a` |
+| `GCP_TF_STATE_BUCKET` | GCP Storage bucket created in Step 1.2 | `my-gemini-agent-prod-nanoclaw-tfstate` |
+| `GCP_WIF_PROVIDER` | Output from Step 1.4 | `projects/1234.../providers/github-provider` |
+| `GCP_SERVICE_ACCOUNT` | Terraform deployer service account email | `terraform-deployer@my-proj.iam.gserviceaccount.com` |
+| `ALLOWED_USER_IDS` | Comma-separated allowed messaging user IDs | `123456789` |
 
 ### Add Secrets (`Repository secrets` tab)
-| Secret Name | Value |
+| Secret Name | Description |
 | :--- | :--- |
 | `GEMINI_API_KEY` | Your Gemini API Key from Google AI Studio |
 | `TELEGRAM_BOT_TOKEN` | Your Telegram Bot Token from `@BotFather` |
@@ -114,8 +124,8 @@ In your forked GitHub repository, navigate to **Settings → Secrets and variabl
 ## Step 3: Deploy via GitHub Actions
 
 1. Push your changes to `main` (or create a Pull Request to run `terraform plan` via `abcxyz/guardian`).
-2. Navigate to the **Actions** tab in GitHub to watch the `Terraform Apply` workflow execute.
-3. Upon completion (~2-3 minutes), GCP Compute Engine will provision the `e2-small` VM, attach the 20GB persistent data disk, retrieve secrets, and start the NanoGemClaw service.
+2. Navigate to the **Actions** tab in GitHub to watch the `Build Container Image` and `Terraform Apply` workflows execute.
+3. Upon completion (~2-3 minutes), GCP Compute Engine will provision the `e2-small` VM, attach the 20GB persistent data disk via systemd mount unit, retrieve secrets, and launch the containerized NanoGemClaw service.
 
 ---
 
@@ -146,9 +156,12 @@ If you ever need to inspect VM logs or debug host startup:
 # SSH into VM instance
 gcloud compute ssh nanoclaw-gemini-agent --zone=us-central1-a
 
-# Check systemd daemon status
-sudo systemctl status nanoclaw.service
+# Check systemd persistent data mount status
+sudo systemctl status opt-nanoclaw-data.mount
 
-# View live daemon logs
-sudo journalctl -u nanoclaw.service -f
+# Check systemd container daemon status
+sudo systemctl status nanoclaw-container.service
+
+# View live container daemon logs
+sudo journalctl -u nanoclaw-container.service -f
 ```
