@@ -87,6 +87,7 @@ else
     --workload-identity-pool="${POOL_NAME}" \
     --display-name="GitHub Actions Provider" \
     --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository" \
+    --attribute-condition="assertion.repository == '${GITHUB_REPO}'" \
     --issuer-uri="https://token.actions.githubusercontent.com"
 fi
 
