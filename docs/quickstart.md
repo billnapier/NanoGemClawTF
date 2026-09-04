@@ -209,3 +209,29 @@ sudo systemctl status nanoclaw-container.service
 # View live container daemon logs
 sudo journalctl -u nanoclaw-container.service -f
 ```
+
+---
+
+## 🌐 Web Dashboard Access
+
+NanoGemClaw includes a built-in web dashboard running on port `3000` inside the container, published securely to `127.0.0.1:3000` on the GCE host VM.
+
+To open the dashboard locally over an encrypted zero-trust SSH tunnel:
+
+1. **Establish SSH Port Forwarding**:
+   ```bash
+   gcloud compute ssh nanoclaw-gemini-agent --zone=us-central1-a -- -L 3000:localhost:3000
+   ```
+
+2. **Open Dashboard in Browser**:
+   Navigate to:
+   ```text
+   http://localhost:3000
+   ```
+
+3. **Dashboard Features**:
+   - 💬 **Registered Groups & Private Chats**: Inspect registered chat sessions.
+   - ⚙️ **Group Configuration**: Toggle web search, persona templates, and model parameters.
+   - 📊 **Real-time Event Stream**: Monitor message flow, task scheduling, and memory consolidation.
+   - 💾 **State & Memory Exports**: Export facts and conversation summaries.
+
