@@ -33,7 +33,7 @@ jobs:
       - name: Checkout NanoGemClaw Source Code
         uses: actions/checkout@v4
         with:
-          repository: ${{ inputs.repository || 'Rlin1027/NanoGemClaw' }}
+          repository: ${{ github.event.inputs.repository || 'Rlin1027/NanoGemClaw' }}
           path: nanogemclaw-src
 
       - name: Ensure Dockerfile Exists
