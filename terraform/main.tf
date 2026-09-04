@@ -47,7 +47,7 @@ resource "google_compute_instance" "nanoclaw_vm" {
 
   attached_disk {
     source      = google_compute_disk.agent_data.id
-    device_name = "nanoclaw-data-disk"
+    device_name = "agent-data"
     mode        = "READ_WRITE"
   }
 
@@ -66,7 +66,8 @@ resource "google_compute_instance" "nanoclaw_vm" {
   metadata = {
     startup-script = templatefile("${path.module}/../scripts/startup.sh", {
       container_image      = var.container_image
-      persistent_disk_name = google_compute_disk.agent_data.name
+      persistent_disk_name = "agent-data"
+      allowed_user_ids     = var.allowed_user_ids
     })
   }
 

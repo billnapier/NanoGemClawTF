@@ -5,6 +5,9 @@ set -euo pipefail
 # Template parameters injected by Terraform:
 #   ${container_image}
 #   ${persistent_disk_name}
+#   ${allowed_user_ids}
+
+ALLOWED_USER_IDS="${allowed_user_ids}"
 
 echo "=== Initializing NanoGemClaw Host ==="
 

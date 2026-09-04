@@ -76,3 +76,10 @@ variable "telegram_bot_token_initial_value" {
   sensitive   = true
   default     = "placeholder-telegram-token"
 }
+
+variable "allowed_user_ids" {
+  description = "Comma-separated list of allowed Telegram user IDs."
+  type        = string
+  default     = ""
+}
+
