@@ -28,10 +28,16 @@ jobs:
           workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
           service_account: ${{ vars.GCP_WIF_SERVICE_ACCOUNT }}
 
-      - name: Setup Guardian & Terraform
-        uses: abcxyz/guardian/actions/setup@v1
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: '1.5.8'
+          terraform_version: '1.5.7'
+
+      - name: Setup Guardian CLI
+        uses: abcxyz/pkg/actions/setup-binary@v1
+        with:
+          name: 'guardian'
+          repo: 'abcxyz/guardian'
 
       - name: Execute Guardian Apply
         env:

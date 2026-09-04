@@ -65,7 +65,7 @@ As a Security Officer, I want Terraform execution variables (`TF_VAR_project_id`
 - **FR-001**: System MUST provide `.github/workflows/terraform-plan.yml` for pull request plan reviews using `abcxyz/guardian`.
 - **FR-002**: System MUST provide `.github/workflows/terraform-apply.yml` for `main` branch applies using `abcxyz/guardian`.
 - **FR-003**: Workflows MUST use `google-github-actions/auth@v2` with Workload Identity Federation (`workload_identity_provider` and `service_account`).
-- **FR-004**: Workflows MUST setup `abcxyz/guardian` action setup (`abcxyz/guardian/actions/setup@v1`) with Terraform `>= 1.5.0`.
+- **FR-004**: Workflows MUST setup Terraform (`hashicorp/setup-terraform@v3` with `1.5.7`) and Guardian CLI (`abcxyz/pkg/actions/setup-binary@v1`).
 - **FR-005**: Workflows MUST dynamically inject backend configuration (`-backend-config="bucket=${{ vars.GCP_TF_STATE_BUCKET }}"`).
 - **FR-006**: Workflows MUST pass all parameters (`TF_VAR_project_id`, `TF_VAR_region`, `TF_VAR_zone`, `TF_VAR_allowed_user_ids`, `TF_VAR_gemini_api_key`, `TF_VAR_telegram_bot_token`) from GitHub repository settings.
 

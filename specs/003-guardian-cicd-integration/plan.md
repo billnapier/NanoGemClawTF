@@ -10,7 +10,7 @@ Automate Infrastructure-as-Code delivery by implementing GitHub Actions workflow
 ## Technical Context
 
 **Language/Version**: HCL (Terraform `>= 1.5.0`), YAML (GitHub Actions)  
-**Primary Dependencies**: `abcxyz/guardian/actions/setup@v1`, `google-github-actions/auth@v2`, `actions/checkout@v4`  
+**Primary Dependencies**: `hashicorp/setup-terraform@v3`, `abcxyz/pkg/actions/setup-binary@v1`, `google-github-actions/auth@v2`, `actions/checkout@v4`  
 **Storage**: GCP Cloud Storage (GCS) for Terraform Remote State  
 **Testing**: `terraform validate`, `terraform fmt -check`, Actionlint / GitHub Actions workflow syntax validation  
 **Target Platform**: GitHub Actions CI/CD Runner (Debian Linux)  
