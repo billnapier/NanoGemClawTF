@@ -26,3 +26,53 @@ variable "state_bucket_name" {
   type        = string
   default     = ""
 }
+
+variable "runtime_service_account_id" {
+  description = "Service account ID for NanoGemClaw runtime instance."
+  type        = string
+  default     = "nanoclaw-agent-runtime-sa"
+}
+
+variable "container_image" {
+  description = "Container image tag for NanoGemClaw runner. Defaults to alpine:latest fallback for Phase 1 decoupling."
+  type        = string
+  default     = "alpine:latest"
+}
+
+variable "vm_machine_type" {
+  description = "Compute Engine machine type for agent host."
+  type        = string
+  default     = "e2-small"
+}
+
+variable "persistent_disk_size_gb" {
+  description = "Size of persistent data disk in GB."
+  type        = number
+  default     = 20
+}
+
+variable "gemini_api_key_secret_id" {
+  description = "Secret Manager secret ID for Gemini API key."
+  type        = string
+  default     = "gemini-api-key"
+}
+
+variable "gemini_api_key_initial_value" {
+  description = "Initial secret value for Gemini API key. Defaults to placeholder."
+  type        = string
+  sensitive   = true
+  default     = "placeholder-gemini-key"
+}
+
+variable "telegram_bot_token_secret_id" {
+  description = "Secret Manager secret ID for Telegram bot token."
+  type        = string
+  default     = "telegram-bot-token"
+}
+
+variable "telegram_bot_token_initial_value" {
+  description = "Initial secret value for Telegram bot token. Defaults to placeholder."
+  type        = string
+  sensitive   = true
+  default     = "placeholder-telegram-token"
+}
