@@ -20,3 +20,20 @@ resource "google_secret_manager_secret_iam_member" "telegram_secret_accessor" {
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.agent_runtime_sa.email}"
 }
+
+# Secret Accessor IAM Member Binding for Google OAuth Client ID Secret
+resource "google_secret_manager_secret_iam_member" "google_client_id_secret_accessor" {
+  project   = var.project_id
+  secret_id = google_secret_manager_secret.google_client_id.id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.agent_runtime_sa.email}"
+}
+
+# Secret Accessor IAM Member Binding for Google OAuth Client Secret
+resource "google_secret_manager_secret_iam_member" "google_client_secret_secret_accessor" {
+  project   = var.project_id
+  secret_id = google_secret_manager_secret.google_client_secret.id
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.agent_runtime_sa.email}"
+}
+

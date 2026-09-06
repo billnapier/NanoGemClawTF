@@ -97,4 +97,31 @@ variable "allowed_user_ids" {
   default     = ""
 }
 
+variable "google_client_id_secret_id" {
+  description = "Secret Manager secret ID for Google OAuth client ID."
+  type        = string
+  default     = "google-client-id"
+}
+
+variable "google_client_id" {
+  description = "Google OAuth client ID."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "google_client_secret_secret_id" {
+  description = "Secret Manager secret ID for Google OAuth client secret."
+  type        = string
+  default     = "google-client-secret"
+}
+
+variable "google_client_secret" {
+  description = "Google OAuth client secret."
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+
 

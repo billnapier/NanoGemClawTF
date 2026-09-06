@@ -61,11 +61,15 @@ PROJECT_ID=$(curl -s -H "Metadata-Flavor: Google" "http://metadata.google.intern
 
 GEMINI_API_KEY=""
 TELEGRAM_BOT_TOKEN=""
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
 
 if command -v gcloud &> /dev/null && [ -n "$PROJECT_ID" ]; then
   echo "Retrieving secrets from Secret Manager for project $PROJECT_ID..."
   GEMINI_API_KEY=$(gcloud secrets versions access latest --secret="gemini-api-key" --project="$PROJECT_ID" 2>/dev/null || echo "")
   TELEGRAM_BOT_TOKEN=$(gcloud secrets versions access latest --secret="telegram-bot-token" --project="$PROJECT_ID" 2>/dev/null || echo "")
+  GOOGLE_CLIENT_ID=$(gcloud secrets versions access latest --secret="google-client-id" --project="$PROJECT_ID" 2>/dev/null || echo "")
+  GOOGLE_CLIENT_SECRET=$(gcloud secrets versions access latest --secret="google-client-secret" --project="$PROJECT_ID" 2>/dev/null || echo "")
 fi
 
 CONFIG_DIR="/opt/nanoclaw/config"
@@ -78,12 +82,15 @@ echo "Generating environment file at $ENV_FILE..."
 cat <<ENV > "$ENV_FILE"
 GEMINI_API_KEY=$GEMINI_API_KEY
 TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN
+GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET
 ALLOWED_USER_IDS=$ALLOWED_USER_IDS
 ADMIN_USER_ID=$ALLOWED_USER_IDS
 DATA_DIR=/opt/nanoclaw/data
 NODE_ENV=production
 LOG_LEVEL=info
 ENV
+
 
 chmod 0600 "$ENV_FILE"
 chown root:root "$ENV_FILE" 2>/dev/null || true
