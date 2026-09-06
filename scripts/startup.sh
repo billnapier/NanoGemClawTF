@@ -89,6 +89,9 @@ ADMIN_USER_ID=$ALLOWED_USER_IDS
 DATA_DIR=/opt/nanoclaw/data
 NODE_ENV=production
 LOG_LEVEL=info
+GOOGLE_OAUTH_PORT=40569
+GOOGLE_OAUTH_HOST=0.0.0.0
+GOOGLE_OAUTH_REDIRECT_URI=http://localhost:40569/oauth2callback
 ENV
 
 
@@ -127,7 +130,7 @@ RestartSec=10
 ExecStartPre=-/usr/bin/docker stop nanogemclaw-agent
 ExecStartPre=-/usr/bin/docker rm nanogemclaw-agent
 ExecStartPre=/usr/bin/docker pull $IMAGE
-ExecStart=/usr/bin/docker run --name nanogemclaw-agent --env-file /opt/nanoclaw/config/env.list -p 127.0.0.1:3000:3000 -v /opt/nanoclaw/data:/opt/nanoclaw/data -v /var/run/docker.sock:/var/run/docker.sock $IMAGE
+ExecStart=/usr/bin/docker run --name nanogemclaw-agent --env-file /opt/nanoclaw/config/env.list -p 127.0.0.1:3000:3000 -p 127.0.0.1:40569:40569 -v /opt/nanoclaw/data:/opt/nanoclaw/data -v /var/run/docker.sock:/var/run/docker.sock $IMAGE
 ExecStop=/usr/bin/docker stop nanogemclaw-agent
 
 [Install]

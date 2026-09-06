@@ -162,6 +162,8 @@ In your forked GitHub repository, navigate to **Settings → Secrets and variabl
 | :--- | :--- |
 | `GEMINI_API_KEY` | Your Gemini API Key from Google AI Studio |
 | `TELEGRAM_BOT_TOKEN` | Your Telegram Bot Token from `@BotFather` |
+| `GOOGLE_CLIENT_ID` | (Optional) Google OAuth2 Client ID for Google Workspace integration |
+| `GOOGLE_CLIENT_SECRET` | (Optional) Google OAuth2 Client Secret for Google Workspace integration |
 
 ---
 
@@ -212,15 +214,15 @@ sudo journalctl -u nanoclaw-container.service -f
 
 ---
 
-## 🌐 Web Dashboard Access
+## 🌐 Web Dashboard & OAuth Access
 
-NanoGemClaw includes a built-in web dashboard running on port `3000` inside the container, published securely to `127.0.0.1:3000` on the GCE host VM.
+NanoGemClaw includes a built-in web dashboard running on port `3000` inside the container, published securely to `127.0.0.1:3000` on the GCE host VM, and an OAuth2 callback listener on port `40569` (`127.0.0.1:40569`).
 
-To open the dashboard locally over an encrypted zero-trust SSH tunnel:
+To open the dashboard and complete Google OAuth flows locally over an encrypted zero-trust SSH tunnel:
 
 1. **Establish SSH Port Forwarding**:
    ```bash
-   gcloud compute ssh nanoclaw-gemini-agent --zone=us-central1-a -- -L 3000:localhost:3000
+   gcloud compute ssh nanoclaw-gemini-agent --zone=us-central1-a -- -L 3000:localhost:3000 -L 40569:localhost:40569
    ```
 
 2. **Open Dashboard in Browser**:
