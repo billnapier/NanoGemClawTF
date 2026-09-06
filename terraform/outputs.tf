@@ -28,6 +28,17 @@ output "telegram_bot_token_secret_id" {
   value       = google_secret_manager_secret.telegram_bot_token.secret_id
 }
 
+output "google_client_id_secret_id" {
+  description = "Secret ID for Google OAuth Client ID in Secret Manager."
+  value       = google_secret_manager_secret.google_client_id.secret_id
+}
+
+output "google_client_secret_secret_id" {
+  description = "Secret ID for Google OAuth Client Secret in Secret Manager."
+  value       = google_secret_manager_secret.google_client_secret.secret_id
+}
+
+
 output "instance_name" {
   description = "Compute Engine instance name."
   value       = google_compute_instance.nanoclaw_vm.name

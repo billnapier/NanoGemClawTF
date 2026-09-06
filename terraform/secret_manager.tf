@@ -27,3 +27,34 @@ resource "google_secret_manager_secret_version" "telegram_bot_token_version" {
   secret      = google_secret_manager_secret.telegram_bot_token.id
   secret_data = var.telegram_bot_token != "" ? var.telegram_bot_token : var.telegram_bot_token_initial_value
 }
+
+# Secret Container for Google OAuth Client ID
+resource "google_secret_manager_secret" "google_client_id" {
+  secret_id = var.google_client_id_secret_id
+
+  replication {
+    auto {}
+  }
+}
+
+# Initial Version Payload for Google OAuth Client ID
+resource "google_secret_manager_secret_version" "google_client_id_version" {
+  secret      = google_secret_manager_secret.google_client_id.id
+  secret_data = var.google_client_id != "" ? var.google_client_id : "placeholder-google-client-id"
+}
+
+# Secret Container for Google OAuth Client Secret
+resource "google_secret_manager_secret" "google_client_secret" {
+  secret_id = var.google_client_secret_secret_id
+
+  replication {
+    auto {}
+  }
+}
+
+# Initial Version Payload for Google OAuth Client Secret
+resource "google_secret_manager_secret_version" "google_client_secret_version" {
+  secret      = google_secret_manager_secret.google_client_secret.id
+  secret_data = var.google_client_secret != "" ? var.google_client_secret : "placeholder-google-client-secret"
+}
+
